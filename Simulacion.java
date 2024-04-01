@@ -49,11 +49,13 @@ public class Simulacion {
         int pagina, desplazamiento;
 
         if (tipoMatriz == 'M') {
-            pagina = 2 + ((nc * i + j)*4)/(tp - tp % 4);
-            desplazamiento = 4 + ((nf * i + j)*4)%(tp - tp % 4);
+            desplazamiento = (4 + ((nf * i + j) * 4) % (tp - tp % 4));
+            pagina = 2 + ((nc * i + j)*4)/(tp - tp % 4) + (desplazamiento / (tp - tp % 4));
+            desplazamiento = desplazamiento % (tp - tp % 4);
         } else if (tipoMatriz == 'R') {
-            pagina = 2 + ((nc * nf + nc) * 4)/(tp - tp % 4) + ((nc * i + j) * 4)/(tp - tp % 4);
-            desplazamiento = 4 + ((nf * nf + nc) * 4) % (tp - tp % 4);
+            desplazamiento = (4 + ((4* nc * nf) % (tp - tp % 4))  + ((nf * i + j) * 4) % (tp - tp % 4));
+            pagina = 2 + ((4 * nc * nf) / (tp - tp % 4)) + ((nc * i + j) * 4)/(tp - tp % 4) + (desplazamiento / (tp - tp % 4));
+            desplazamiento = desplazamiento % (tp - tp % 4);
         } else {
             pagina = (4 * (3 * i + j)) / (tp - tp % 4) ;
             desplazamiento = ((3 * i + j) * 4) % (tp - tp % 4);
