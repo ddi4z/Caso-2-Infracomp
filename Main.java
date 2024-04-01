@@ -6,11 +6,19 @@ import java.util.Scanner;
 public class Main {
     private static final String ruta = "referencias.txt";
 
+    /*
+     * Obtiene la ruta del archivo de referencias.
+     * @return: la ruta del archivo de referencias.
+    */
     public static String getRuta() {
         return ruta;
     }
 
-    public static void main(String[] args) {
+    /*
+     * Simula referencias a memoria de un proceso especificado.
+     * Corresponde a la parte 1 del enunciado.
+    */
+    public void simularRefencias(){
         int NF, NC;
         int TP, NR, NP;
         Scanner scanner = new Scanner(System.in);
@@ -21,8 +29,8 @@ public class Main {
         System.out.println("Ingrese el número de columnas: ");
         NC = scanner.nextInt();
 
-        NP = (int) Math.ceil((2 * NF * NC + 9.0) / (TP/4));
-        NR = 18 * (NF-2) * (NC-2) + NF * NC;
+        NP = (int) Math.ceil((2 * NF * NC + 9.0) / (TP / 4));
+        NR = 18 * (NF - 2) * (NC - 2) + NF * NC;
 
         try {
             FileWriter archivo = new FileWriter(ruta);
@@ -41,6 +49,42 @@ public class Main {
         Simulacion simulacion = new Simulacion(TP, NF, NC);
         simulacion.iniciarSimulacion();
 
+        scanner.close();
+    }
+
+    /*
+     * Corresponde a la parte 2 del enunciado.
+    */
+    public void realizarCalculos(){
+        System.out.println("Opción no implementada aún.");
+    }
+
+    /*
+     * Método principal.
+     * Se encarga de mostrar el menú de opciones y ejecutar la opción seleccionada.
+    */
+    public static void main(String[] args) {
+        int opcion;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\nIngrese la opción deseada: \n");
+        System.out.println("1. Simular referencias");
+        System.out.println("2. Realizar cálculos");
+        opcion = scanner.nextInt();
+
+        Main main = new Main();
+
+        switch (opcion) {
+            case 1:
+                main.simularRefencias();
+                break;
+            case 2:
+                main.realizarCalculos();
+                break;
+            default:
+                System.out.println("Opción no válida");
+                break;
+        }
         scanner.close();
     }
 }

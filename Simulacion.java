@@ -2,12 +2,17 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-
 public class Simulacion {
     private int tp,nf, nc;
     private int[][] mat1, mat2, mat3;
     private BufferedWriter escritorArchivo;
 
+    /*
+     * Constructor de la clase Simulacion.
+     * @param tp: tamaño de página.
+     * @param nf: número de filas.
+     * @param nc: número de columnas.
+    */
     public Simulacion(int tp, int nf, int nc) {
         this.tp = tp;
         this.nf = nf;
@@ -17,6 +22,11 @@ public class Simulacion {
         mat3 = new int[nf][nc];
     }
 
+    /*
+     * Inicializa las 2 matrices con valores aleatorios.
+     * Inicializa el atributos de escritura.
+     * Iniciliza el proceso.
+    */
     public void iniciarSimulacion() {
         for (int i = 0; i < nf; i++) {
             for (int j = 0; j < nc; j++) {
@@ -41,25 +51,66 @@ public class Simulacion {
         }
     }
 
+    /*
+     * Calcula el desplazamiento de una matriz en base a sus dimensiones y sus indices.
+     * @param nf: número de filas de la matriz.
+     * @param nc: número de columnas de la matriz.
+     * @param i: índice de la fila, indexado en 0.
+     * @param j: índice de la columna, indexado en 0.
+     * @return: el desplazamiento de la matriz.
+    */
+    public int calcularDesplazamiento(int nf, int nc, int i, int j){
+        return ((nf * i + j) * 4) % (tp - tp % 4);
+    }
+
+    /*
+     * Calcula la cantidad de paginas de una matriz en base a sus dimensiones y sus indices.
+     * @param nf: número de filas de la matriz.
+     * @param nc: número de columnas de la matriz.
+     * @param i: índice de la fila, indexado en 0.
+     * @param j: índice de la columna, indexado en 0.
+     * @param desplazamiento: desplazamiento acumulado de la matriz.
+     * @return: el desplazamiento de la matriz.
+    */
+    public int calcularPaginas(int nf, int nc, int i, int j, int desplazamiento){
+        return ((nc * i + j) * 4) / (tp - tp % 4) + (desplazamiento / (tp - tp % 4));
+    }
+
+    /*
+     * Reporta la referencia de una matriz en el archivo de salida.
+     * @param mat: matriz a la que se le reportará la referencia.
+     * @param i: índice de la fila, indexado en 0.
+     * @param j: índice de la columna, indexado en 0.
+     * @param tipo: tipo de referencia, 'R' para lectura y 'W' para escritura.
+    */
     public void reportarReferencia(int[][] mat,int i, int j, char tipo){
         char tipoMatriz = 'M';
-        if(mat == mat2) tipoMatriz = 'F';
-        else if(mat == mat3) tipoMatriz = 'R';
+        if (mat == mat2) tipoMatriz = 'F';
+        else if (mat == mat3) tipoMatriz = 'R';
 
+        // Las siguientes 4 líneas de código calculan el desplazamiento y paginas del filtro y la matriz para realizar calculos acumulativos.
+        // Los indices de una matriz estan indexados desde 0, por lo que se le resta 1 a los indices de la matriz.
+        // Sin embargo, necesitamos la referencia al final de la matriz, por lo que se le suma 1 a j.
+        int desplazamientoDelFiltroTotal = calcularDesplazamiento(3,3,(3-1),(3));
+        int paginasDelFiltroTotal = calcularPaginas(3,3,(3-1),(3) ,0);
+        int desplazamientoDeMatrizTotal = calcularDesplazamiento(nf,nc,(nf-1),(nc));
+        int paginasDeMatrizTotal = calcularPaginas(nf,nc,(nf-1),(nc) ,0);
+
+        // Calcula el desplazamiento y la página de la referencia según el tipo de matriz.
         int pagina, desplazamiento;
-
         if (tipoMatriz == 'M') {
-            desplazamiento = (4 + ((nf * i + j) * 4) % (tp - tp % 4));
-            pagina = 2 + ((nc * i + j)*4)/(tp - tp % 4) + (desplazamiento / (tp - tp % 4));
-            desplazamiento = desplazamiento % (tp - tp % 4);
+            desplazamiento = desplazamientoDelFiltroTotal + calcularDesplazamiento(nf,nc,i,j);
+            pagina = paginasDelFiltroTotal + calcularPaginas(nf,nc,i,j,desplazamiento);
         } else if (tipoMatriz == 'R') {
-            desplazamiento = (4 + ((4* nc * nf) % (tp - tp % 4))  + ((nf * i + j) * 4) % (tp - tp % 4));
-            pagina = 2 + ((4 * nc * nf) / (tp - tp % 4)) + ((nc * i + j) * 4)/(tp - tp % 4) + (desplazamiento / (tp - tp % 4));
-            desplazamiento = desplazamiento % (tp - tp % 4);
+            desplazamiento = desplazamientoDelFiltroTotal + desplazamientoDeMatrizTotal + calcularDesplazamiento(nf,nc,i,j);
+            pagina = paginasDelFiltroTotal + paginasDeMatrizTotal + calcularPaginas(nf,nc,i,j,desplazamiento);
         } else {
-            pagina = (4 * (3 * i + j)) / (tp - tp % 4) ;
-            desplazamiento = ((3 * i + j) * 4) % (tp - tp % 4);
+            desplazamiento = calcularDesplazamiento(3,3,i,j);
+            pagina = calcularPaginas(3,3,i,j,desplazamiento);
         }
+        desplazamiento = desplazamiento % (tp - tp % 4);
+
+        // Escribe la referencia en el archivo de salida.
         try {
             escritorArchivo.write(tipoMatriz + "["+ i +"][" + j + "]," + pagina + "," + desplazamiento +",W\n");
         } catch (IOException e) {
@@ -67,16 +118,34 @@ public class Simulacion {
         }
     }
 
+    /*
+     * Escribe un valor en una matriz y reporta la referencia en el archivo de salida.
+     * @param mat: matriz en la que se escribirá el valor.
+     * @param i: índice de la fila, indexado en 0.
+     * @param j: índice de la columna, indexado en 0.
+     * @param valor: valor que se escribirá en la matriz.
+    */
     public void escribir(int[][] mat, int i, int j, int valor){
         reportarReferencia(mat, i, j, 'W');
         mat[i][j] = valor;
     }
 
+    /*
+     * Lee un valor de una matriz y reporta la referencia en el archivo de salida.
+     * @param mat: matriz de la que se leerá el valor.
+     * @param i: índice de la fila, indexado en 0.
+     * @param j: índice de la columna, indexado en 0.
+     * @return: el valor leído de la matriz.
+    */
     public int leer(int[][] mat, int i, int j){
         reportarReferencia(mat, i, j, 'R');
         return mat[i][j];
     }
 
+    /*
+     * Ejecuta el algoritmo especificado.
+     * Para el caso, se trata de una convolución de matrices.
+    */
     public void proceso() {
         for (int i = 1; i < nf - 1; i++) {
             for (int j = 1; j < nc - 1; j++) {
