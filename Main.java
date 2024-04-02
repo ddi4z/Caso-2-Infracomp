@@ -56,7 +56,17 @@ public class Main {
      * Corresponde a la parte 2 del enunciado.
     */
     public void realizarCalculos(){
-        System.out.println("Opción no implementada aún.");
+        int NMP;
+        String ruta;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el número de marcos de página: ");
+        NMP = scanner.nextInt();
+        System.out.println("Ingrese la ruta del archivo de referencias: ");
+        ruta = scanner.next();
+        scanner.close();
+    
+        Calculo calculo = new Calculo(NMP, ruta);
+        calculo.realizarCalculos();
     }
 
     /*
