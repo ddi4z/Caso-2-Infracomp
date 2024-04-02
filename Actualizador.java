@@ -8,7 +8,7 @@ public class Actualizador {
         for (int i = 0; i < rBits.length; i++) {
             rBits[i] = rBits[i]>>1;
             if (paginasReferenciadas.contains(i)) {
-                rBits[i] += 1<<8;
+                rBits[i] += 1<<7;
             }
         }
         paginasReferenciadas.clear();
