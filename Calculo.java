@@ -14,19 +14,21 @@ public class Calculo {
     private int[] tablaAuxiliar;
     private boolean[] marcosPagina;
 
-    private static int milisegundos;
-
-
+    /*
+     * Constructor de la clase Calculo.
+     * @param NMP Número de marcos de página.
+     * @param ruta Ruta del archivo de texto que contiene las referencias.
+    */
     public Calculo(int NMP, String ruta){
         this.NMP = NMP;
         this.marcosPagina = new boolean[NMP];
         this.ruta = ruta;
     }
 
-    public static int getMilisegundos() {
-        return milisegundos;
-    }
-
+    /*
+     * Este método se encarga de cargar el archivo de texto que contiene las referencias
+     * y demas valores de interés dentro del archivo.
+    */
     public void cargarArchivo() {
         int lineasProcesadas = 0;
         try {
@@ -57,6 +59,10 @@ public class Calculo {
         }
     }
 
+    /*
+     * Este método se encarga de inicializar las estructuras de datos que se utilizarán
+     * para realizar los cálculos.
+    */
     public void inicializarEstructuras() {
         for (int i = 0; i < NMP; i++) {
             this.marcosPagina[i] = false;
@@ -67,6 +73,26 @@ public class Calculo {
         }
     }
 
+    /*
+     * Este método se encarga de imprimir los resultados obtenidos al realizar los cálculos
+     * necesarios para determinar la cantidad de hits y misses que se obtienen al realizar
+     * las referencias contenidas en el archivo de texto.
+     * @param hits Cantidad de hits obtenidos.
+     * @param misses Cantidad de misses obtenidos.
+    */
+    public void imprimirResultados(int hits, int misses){
+        System.out.println("Hits: " + hits + " = " + (hits*100.0/this.nr) + "%");
+        System.out.println("Fallas: " + misses + " = " + (misses*100.0/this.nr) + "%");
+        System.out.println("Tiempo de ejecución: (hits * 30) ns + (misses * 10000000) ns = " + hits*30 + " + " + misses*10000000 + " = " + (hits*30 + misses*10000000) + " ns");
+        System.out.println("Tiempo si todo fuera fallos: " + this.nr*10000000 + " ns");
+        System.out.println("Tiempo si todo fuera hits: " + this.nr*30 + " ns");
+    }
+
+    /*
+     * Este método se encarga de realizar los cálculos necesarios para determinar
+     * la cantidad de hits y misses que se obtienen al realizar las referencias
+     * contenidas en el archivo de texto.
+    */
     public void realizarCalculos(){
         cargarArchivo();
         inicializarEstructuras();
@@ -82,11 +108,10 @@ public class Calculo {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Calculo.milisegundos= i+1;
             referencia = this.referencias[i].split(",");
             pagina = Integer.parseInt(referencia[1]);
 
-            if (milisegundos%4 == 0) conteo.pedirActualizar();
+            if (i+1%4 == 0) conteo.pedirActualizar();
 
             if (this.tablaPaginas[pagina] == -1) {
                 misses++;
@@ -109,13 +134,8 @@ public class Calculo {
                 hits++;
                 this.conteo.referenciarPagina(pagina);
             }
-
         }
         actualizador.detener();
-        System.out.println("Hits: " + hits + " = " + (hits*100.0/this.nr) + "%");
-        System.out.println("Fallas: " + misses + " = " + (misses*100.0/this.nr) + "%");
-        System.out.println("Tiempo de ejecución: (hits * 30) ns + (misses * 10000000) ns = " + hits*30 + " + " + misses*10000000 + " = " + (hits*30 + misses*10000000) + " ns");
-        System.out.println("Tiempo si todo fuera fallos: " + this.nr*10000000 + " ns");
-        System.out.println("Tiempo si todo fuera hits: " + this.nr*30 + " ns");
+        imprimirResultados(hits, misses);
     }
 }
