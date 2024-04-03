@@ -14,11 +14,17 @@ public class Calculo {
     private int[] tablaAuxiliar;
     private boolean[] marcosPagina;
 
+    private static int milisegundos;
+
 
     public Calculo(int NMP, String ruta){
         this.NMP = NMP;
         this.marcosPagina = new boolean[NMP];
         this.ruta = ruta;
+    }
+
+    public static int getMilisegundos() {
+        return milisegundos;
     }
 
     public void cargarArchivo() {
@@ -76,10 +82,11 @@ public class Calculo {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            Calculo.milisegundos= i+1;
             referencia = this.referencias[i].split(",");
             pagina = Integer.parseInt(referencia[1]);
 
-            if ((i+1)%4 == 0) actualizador.start();
+            if (milisegundos%4 == 0) conteo.pedirActualizar();
 
             if (this.tablaPaginas[pagina] == -1) {
                 misses++;
@@ -104,6 +111,7 @@ public class Calculo {
             }
 
         }
+        actualizador.detener();
         System.out.println("Hits: " + hits + " = " + (hits*100.0/this.nr) + "%");
         System.out.println("Fallas: " + misses + " = " + (misses*100.0/this.nr) + "%");
         System.out.println("Tiempo de ejecución: (hits * 30) ns + (misses * 10000000) ns = " + hits*30 + " + " + misses*10000000 + " = " + (hits*30 + misses*10000000) + " ns");
