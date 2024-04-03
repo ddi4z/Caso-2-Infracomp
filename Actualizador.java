@@ -1,22 +1,12 @@
-import java.util.HashSet;
-
 public class Actualizador {
-    private int[] rBits;
-    private HashSet<Integer> paginasReferenciadas;
+    private Conteo conteo;
 
-    public void actualizarRBits() {
-        for (int i = 0; i < rBits.length; i++) {
-            rBits[i] = rBits[i]>>1;
-            if (paginasReferenciadas.contains(i)) {
-                rBits[i] += 1<<7;
-            }
-        }
-        paginasReferenciadas.clear();
+    public void start() {
+        conteo.actualizarRBits();
     }
 
-    public Actualizador(int[] rBits, HashSet<Integer> paginasReferenciadas) {
-        this.rBits = rBits;
-        this.paginasReferenciadas = paginasReferenciadas;
+    public Actualizador(Conteo conteo) {
+        this.conteo = conteo;
     }
 
 }

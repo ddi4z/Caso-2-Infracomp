@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
 import java.util.Scanner;
 
 public class Calculo {
@@ -9,12 +8,12 @@ public class Calculo {
 
     private int nr, np;
     private String[] referencias;
+    private Conteo conteo;
 
     private int[] tablaPaginas;
     private int[] tablaAuxiliar;
     private boolean[] marcosPagina;
-    private int[] rBits;
-    private HashSet<Integer> paginasReferenciadas;
+
 
     public Calculo(int NMP, String ruta){
         this.NMP = NMP;
@@ -39,7 +38,7 @@ public class Calculo {
                     this.np = Integer.parseInt(linea.split("=")[1]);
                     this.tablaPaginas = new int[this.np];
                     this.tablaAuxiliar = new int[this.np];
-                    this.rBits = new int[this.np];
+                    this.conteo = new Conteo(this.np);
                 }
                 if  (lineasProcesadas > 5){
                     this.referencias[lineasProcesadas - 6] = linea;
@@ -59,9 +58,7 @@ public class Calculo {
         for (int i = 0; i < this.np; i++) {
             this.tablaPaginas[i] = -1;
             this.tablaAuxiliar[i] = i;
-            this.rBits[i] = 0;
         }
-        this.paginasReferenciadas = new HashSet<>();
     }
 
     public void realizarCalculos(){
@@ -72,12 +69,17 @@ public class Calculo {
         int pagina;
         int hits = 0;
         int misses = 0;
-        Actualizador actualizador = new Actualizador(this.rBits, this.paginasReferenciadas);
+        Actualizador actualizador = new Actualizador(this.conteo);
         for (int i = 0; i < this.nr; i++) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             referencia = this.referencias[i].split(",");
             pagina = Integer.parseInt(referencia[1]);
 
-            if (i%4 == 0) actualizador.actualizarRBits();
+            if ((i+1)%4 == 0) actualizador.start();
 
             if (this.tablaPaginas[pagina] == -1) {
                 misses++;
@@ -88,22 +90,17 @@ public class Calculo {
                 if (marco < this.NMP) {
                     this.tablaPaginas[pagina] = marco;
                     this.marcosPagina[marco] = true;
-                    this.paginasReferenciadas.add(pagina);
+                    this.conteo.referenciarPagina(pagina);
                 } else {
-                    int idx = 0, menor = 256;
-                    for (int j = 0; j < this.np; j++) {
-                        if (this.tablaPaginas[j] != -1 && this.rBits[j] < menor) {
-                            menor = this.rBits[j];
-                            idx = j;
-                        }
-                    }
+                    int idx  = this.conteo.obtenerPaginaAEliminar(this.tablaPaginas);
+
                     this.tablaPaginas[pagina] = this.tablaPaginas[idx];
                     this.tablaPaginas[idx] = -1;
-                    this.paginasReferenciadas.add(pagina);
+                    this.conteo.referenciarPagina(pagina);
                 }
             } else {
                 hits++;
-                this.paginasReferenciadas.add(pagina);
+                this.conteo.referenciarPagina(pagina);
             }
 
         }

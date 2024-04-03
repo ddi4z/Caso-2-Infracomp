@@ -80,6 +80,7 @@ public class Main {
         System.out.println("\nIngrese la opción deseada: \n");
         System.out.println("1. Simular referencias");
         System.out.println("2. Realizar cálculos");
+        System.out.println("0. Salir");
         opcion = scanner.nextInt();
 
         Main main = new Main();
@@ -92,7 +93,6 @@ public class Main {
                 main.realizarCalculos();
                 break;
             default:
-                System.out.println("Opción no válida");
                 break;
         }
         scanner.close();
