@@ -102,6 +102,8 @@ public class Calculo {
         int hits = 0;
         int misses = 0;
         Actualizador actualizador = new Actualizador(this.conteo);
+        actualizador.start();
+
         for (int i = 0; i < this.nr; i++) {
             try {
                 Thread.sleep(1);
@@ -111,7 +113,7 @@ public class Calculo {
             referencia = this.referencias[i].split(",");
             pagina = Integer.parseInt(referencia[1]);
 
-            if (i+1%4 == 0) conteo.pedirActualizar();
+            if ((i+1)%4 == 0) conteo.pedirActualizar();
 
             if (this.tablaPaginas[pagina] == -1) {
                 misses++;
@@ -135,6 +137,7 @@ public class Calculo {
                 this.conteo.referenciarPagina(pagina);
             }
         }
+        conteo.pedirActualizar();
         actualizador.detener();
         imprimirResultados(hits, misses);
     }
