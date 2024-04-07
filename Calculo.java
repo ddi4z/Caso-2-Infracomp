@@ -116,8 +116,7 @@ public class Calculo {
 
             pagina = Integer.parseInt(referencia[1]);
             escritura = referencia[3].equals("W");
-            System.out.println(pagina +""+  referencia[3] + "" + escritura);
-            
+
             if ((i+1)%4 == 0) conteo.pedirActualizar();
 
             if (this.tablaPaginas[pagina] == -1) {

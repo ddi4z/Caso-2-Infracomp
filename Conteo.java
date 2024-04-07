@@ -68,7 +68,7 @@ public class Conteo {
                 } else if (rBits[j] == 1 && mBits[j] == 1) {
                     currValue = 3;
                 }
-                if (currValue < menor) {
+                if (currValue <= menor) {
                     menor = currValue;
                     idx = j;
                 }
