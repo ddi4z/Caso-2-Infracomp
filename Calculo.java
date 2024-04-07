@@ -99,20 +99,25 @@ public class Calculo {
 
         String[] referencia;
         int pagina;
+        boolean escritura;
         int hits = 0;
         int misses = 0;
         Actualizador actualizador = new Actualizador(this.conteo);
         actualizador.start();
 
-        for (int i = 0; i < this.nr; i++) {
+        int i = 0;
+        while (i < this.nr) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             referencia = this.referencias[i].split(",");
-            pagina = Integer.parseInt(referencia[1]);
 
+            pagina = Integer.parseInt(referencia[1]);
+            escritura = referencia[3].equals("W");
+            System.out.println(pagina +""+  referencia[3] + "" + escritura);
+            
             if ((i+1)%4 == 0) conteo.pedirActualizar();
 
             if (this.tablaPaginas[pagina] == -1) {
@@ -124,19 +129,29 @@ public class Calculo {
                 if (marco < this.NMP) {
                     this.tablaPaginas[pagina] = marco;
                     this.marcosPagina[marco] = true;
-                    this.conteo.referenciarPagina(pagina);
+                    this.conteo.referenciarPagina(pagina, escritura);
                 } else {
                     int idx  = this.conteo.obtenerPaginaAEliminar(this.tablaPaginas);
 
                     this.tablaPaginas[pagina] = this.tablaPaginas[idx];
                     this.tablaPaginas[idx] = -1;
-                    this.conteo.referenciarPagina(pagina);
+                    this.conteo.referenciarPagina(pagina, escritura);
                 }
             } else {
                 hits++;
-                this.conteo.referenciarPagina(pagina);
+                this.conteo.referenciarPagina(pagina, escritura);
             }
+            i++;
         }
+        while (i%4 != 0) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
+
         conteo.pedirActualizar();
         actualizador.detener();
         imprimirResultados(hits, misses);

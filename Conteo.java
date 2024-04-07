@@ -1,12 +1,13 @@
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class Conteo {
     private int[] rBits;
-    private HashSet<Integer> paginasReferenciadas;
+    private int[] mBits;
+    private HashMap<Integer,Boolean> paginasReferenciadas;
     private String estado;
 
     /*
-     * Este método se encarga de actualizar los bits R de las páginas.
+     * Este método se encarga de actualizar los bits R y M de las páginas.
     */
     public synchronized void actualizarRBits() {
         try {
@@ -16,11 +17,13 @@ public class Conteo {
         }
         estado = "Actualizando";
         for (int i = 0; i < rBits.length; i++) {
-            // Desplazar bits a la derecha.
-            rBits[i] = rBits[i]>>1;
-            if (paginasReferenciadas.contains(i)) {
-                // Encender el octavo bit.
-                rBits[i] += 1<<7;
+            // Establecer numeros en 0
+            rBits[i] = 0;
+            if (paginasReferenciadas.containsKey(i)) {
+                rBits[i] = 1;
+            }
+            if (paginasReferenciadas.containsKey(i) && paginasReferenciadas.get(i)) {
+                mBits[i] = 1;
             }
         }
         // Limpiar lista de páginas referenciadas.
@@ -51,12 +54,24 @@ public class Conteo {
             }
         }
 
-        // Encontrar la página con el conteo mas bajo, en caso de empate, se elige la primera.
-        int idx = 0, menor = 256;
+        // Encontrar la página con la clase mas baja
+        int idx = 0, menor = 4;
         for (int j = 0; j < tablaPaginas.length; j++) {
-            if (tablaPaginas[j] != -1 && this.rBits[j] < menor) {
-                menor = this.rBits[j];
-                idx = j;
+            if (tablaPaginas[j] != -1) {
+                int currValue = 0;
+                if (rBits[j] == 0 && mBits[j] == 0) {
+                    currValue = 0;
+                } else if (rBits[j] == 0 && mBits[j] == 1) {
+                    currValue = 1;
+                } else if (rBits[j] == 1 && mBits[j] == 0) {
+                    currValue = 2;
+                } else if (rBits[j] == 1 && mBits[j] == 1) {
+                    currValue = 3;
+                }
+                if (currValue < menor) {
+                    menor = currValue;
+                    idx = j;
+                }
             }
         }
         return idx;
@@ -66,7 +81,7 @@ public class Conteo {
      * Este método se encarga de referenciar una página, añadiendo su número a la lista de páginas referenciadas.
      * @param pagina: índice de la página a referenciar.
     */
-    public synchronized void referenciarPagina(int pagina) {
+    public synchronized void referenciarPagina(int pagina, boolean modificado) {
         if (estado.equals("Actualizando")) {
             try {
                 wait();
@@ -74,7 +89,7 @@ public class Conteo {
                 e.printStackTrace();
             }
         }
-        paginasReferenciadas.add(pagina);
+        paginasReferenciadas.put(pagina, modificado);
     }
 
     /*
@@ -83,11 +98,13 @@ public class Conteo {
     */
     public Conteo(int np) {
         this.rBits = new int[np];
-        this.paginasReferenciadas = new HashSet<Integer>();
+        this.mBits = new int[np];
+        this.paginasReferenciadas = new HashMap<>();
         this.estado = "Esperando";
 
         for (int i = 0; i < rBits.length; i++) {
             rBits[i] = 0;
+            mBits[i] = 0;
         }
         paginasReferenciadas.clear();
     }

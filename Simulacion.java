@@ -112,7 +112,7 @@ public class Simulacion {
 
         // Escribe la referencia en el archivo de salida.
         try {
-            escritorArchivo.write(tipoMatriz + "["+ i +"][" + j + "]," + pagina + "," + desplazamiento +",W\n");
+            escritorArchivo.write(tipoMatriz + "["+ i +"][" + j + "]," + pagina + "," + desplazamiento +"," + tipo +"\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
