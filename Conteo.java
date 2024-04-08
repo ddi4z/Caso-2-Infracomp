@@ -1,7 +1,6 @@
 public class Conteo {
     private int[] rBits;
     private int[] mBits;
-    private String estado;
 
     /*
      * Este método se encarga de actualizar los bits R y M de las páginas.
@@ -12,11 +11,9 @@ public class Conteo {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        estado = "Actualizando";
         for (int i = 0; i < rBits.length; i++) {
             rBits[i] = 0;
         }
-        estado = "Esperando";
         notify();
     }
 
@@ -33,13 +30,6 @@ public class Conteo {
      * @return índice de la página a eliminar.
     */
     public synchronized int obtenerPaginaAEliminar(int[] tablaPaginas) {
-        if (estado.equals("Actualizando")) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         // Encontrar la página con la clase mas baja
         int idx = 0, menor = 4;
         for (int j = 0; j < tablaPaginas.length; j++) {
@@ -54,7 +44,7 @@ public class Conteo {
                 } else if (rBits[j] == 1 && mBits[j] == 1) {
                     currValue = 3;
                 }
-                if (currValue <= menor) {
+                if (currValue < menor) {
                     menor = currValue;
                     idx = j;
                 }
@@ -64,17 +54,10 @@ public class Conteo {
     }
 
     /*
-     * Este método se encarga de referenciar una página, añadiendo su número a la lista de páginas referenciadas.
+     * Este método se encarga de referenciar una página.
      * @param pagina: índice de la página a referenciar.
     */
     public synchronized void referenciarPagina(int pagina, boolean modificado) {
-        if (estado.equals("Actualizando")) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         rBits[pagina] = 1;
         if (modificado) {
             mBits[pagina] = 1;
@@ -88,7 +71,6 @@ public class Conteo {
     public Conteo(int np) {
         this.rBits = new int[np];
         this.mBits = new int[np];
-        this.estado = "Esperando";
         for (int i = 0; i < rBits.length; i++) {
             rBits[i] = 0;
             mBits[i] = 0;

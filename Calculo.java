@@ -150,7 +150,6 @@ public class Calculo {
             }
             i++;
         }
-
         conteo.pedirActualizar();
         actualizador.detener();
         imprimirResultados(hits, misses);
