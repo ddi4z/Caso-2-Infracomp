@@ -64,7 +64,7 @@ public class Main {
         System.out.println("Ingrese la ruta del archivo de referencias: ");
         ruta = scanner.next();
         scanner.close();
-    
+
         Calculo calculo = new Calculo(NMP, ruta);
         calculo.realizarCalculos();
     }

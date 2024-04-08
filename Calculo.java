@@ -81,11 +81,13 @@ public class Calculo {
      * @param misses Cantidad de misses obtenidos.
     */
     public void imprimirResultados(int hits, int misses){
-        System.out.println("Hits: " + hits + " = " + (hits*100.0/this.nr) + "%");
-        System.out.println("Fallas: " + misses + " = " + (misses*100.0/this.nr) + "%");
+        System.out.println("Hits: " + hits + " = " + String.format("%.3f",(hits*100.0/this.nr)) + "%");
+        System.out.println("Fallas: " + misses + " = " + String.format("%.3f",(misses*100.0/this.nr)) + "%");
         System.out.println("Tiempo de ejecución: (hits * 30) ns + (misses * 10000000) ns = " + hits*30 + " + " + misses*10000000 + " = " + (hits*30 + misses*10000000) + " ns");
-        System.out.println("Tiempo si todo fuera fallos: " + this.nr*10000000 + " ns");
-        System.out.println("Tiempo si todo fuera hits: " + this.nr*30 + " ns");
+        long tiempoFallos = this.nr*10000000L;
+        System.out.println("Tiempo si todo fuera fallos: " + tiempoFallos + " ns");
+        long tiempoHits = this.nr*30L;
+        System.out.println("Tiempo si todo fuera hits: " + tiempoHits + " ns");
     }
 
     /*
@@ -131,7 +133,6 @@ public class Calculo {
                     this.conteo.referenciarPagina(pagina, escritura);
                 } else {
                     int idx  = this.conteo.obtenerPaginaAEliminar(this.tablaPaginas);
-
                     this.tablaPaginas[pagina] = this.tablaPaginas[idx];
                     this.tablaPaginas[idx] = -1;
                     this.conteo.referenciarPagina(pagina, escritura);
@@ -150,8 +151,8 @@ public class Calculo {
             }
             i++;
         }
-        conteo.pedirActualizar();
         actualizador.detener();
+        conteo.pedirActualizar();
         imprimirResultados(hits, misses);
     }
 }
