@@ -83,11 +83,9 @@ public class Calculo {
     public void imprimirResultados(int hits, int misses){
         System.out.println("Hits: " + hits + " = " + String.format("%.3f",(hits*100.0/this.nr)) + "%");
         System.out.println("Fallas: " + misses + " = " + String.format("%.3f",(misses*100.0/this.nr)) + "%");
-        System.out.println("Tiempo de ejecución: (hits * 30) ns + (misses * 10000000) ns = " + hits*30 + " + " + misses*10000000 + " = " + (hits*30 + misses*10000000) + " ns");
-        long tiempoFallos = this.nr*10000000L;
-        System.out.println("Tiempo si todo fuera fallos: " + tiempoFallos + " ns");
-        long tiempoHits = this.nr*30L;
-        System.out.println("Tiempo si todo fuera hits: " + tiempoHits + " ns");
+        System.out.println("Tiempo de ejecución: (hits * 30) ns + (misses * 10000000) ns = " + hits*30L + " + " + misses*10000000L + " = " + (hits*30L + misses*10000000L) + " ns");
+        System.out.println("Tiempo si todo fuera fallos: " + this.nr*10000000L + " ns");
+        System.out.println("Tiempo si todo fuera hits: " + this.nr*30L + " ns");
     }
 
     /*
