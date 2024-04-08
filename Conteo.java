@@ -1,9 +1,6 @@
-import java.util.HashMap;
-
 public class Conteo {
     private int[] rBits;
     private int[] mBits;
-    private HashMap<Integer,Boolean> paginasReferenciadas;
     private String estado;
 
     /*
@@ -17,18 +14,8 @@ public class Conteo {
         }
         estado = "Actualizando";
         for (int i = 0; i < rBits.length; i++) {
-            // Establecer numeros en 0
             rBits[i] = 0;
-            if (paginasReferenciadas.containsKey(i)) {
-                rBits[i] = 1;
-            }
-            if (paginasReferenciadas.containsKey(i) && paginasReferenciadas.get(i)) {
-                mBits[i] = 1;
-            }
         }
-        // Limpiar lista de páginas referenciadas.
-        paginasReferenciadas.clear();
-
         estado = "Esperando";
         notify();
     }
@@ -53,7 +40,6 @@ public class Conteo {
                 e.printStackTrace();
             }
         }
-
         // Encontrar la página con la clase mas baja
         int idx = 0, menor = 4;
         for (int j = 0; j < tablaPaginas.length; j++) {
@@ -89,7 +75,10 @@ public class Conteo {
                 e.printStackTrace();
             }
         }
-        paginasReferenciadas.put(pagina, modificado);
+        rBits[pagina] = 1;
+        if (modificado) {
+            mBits[pagina] = 1;
+        }
     }
 
     /*
@@ -99,13 +88,10 @@ public class Conteo {
     public Conteo(int np) {
         this.rBits = new int[np];
         this.mBits = new int[np];
-        this.paginasReferenciadas = new HashMap<>();
         this.estado = "Esperando";
-
         for (int i = 0; i < rBits.length; i++) {
             rBits[i] = 0;
             mBits[i] = 0;
         }
-        paginasReferenciadas.clear();
     }
 }
