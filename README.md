@@ -10,6 +10,5 @@ La primera parte del caso implica una simulación de la generación de referenci
 
 | Nombre                  | Login   |
 |---|---|
-| Alejandra Bravo Vega    | a.bravo |
 | Daniel Felipe Diaz Moreno | d.diazm |
 | Juan Diego Ortega Medina | j.ortegam |
