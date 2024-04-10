@@ -60,7 +60,7 @@ public class Simulacion {
      * @return: el desplazamiento de la matriz.
     */
     public int calcularDesplazamiento(int nf, int nc, int i, int j){
-        return ((nf * i + j) * 4) % (tp - tp % 4);
+        return ((nc * i + j) * 4) % (tp - tp % 4);
     }
 
     /*
