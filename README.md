@@ -1,5 +1,5 @@
 # Caso-2-Infracomp
-
+You can read the English version [here](https://github.com/ddi4z/Caso-2-Infracomp/blob/main/ENGLISH.MD).
 ## Descripción
 
 Este repositorio contiene el código relacionado con el Caso 2 de Infracomp.
